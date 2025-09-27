@@ -26,7 +26,7 @@ int main()
             if((a != 0)&& (b != 0))
             {
               float div = (a/b);
-              printf("division is :%f\n"div);
+              printf("division is :%f\n",div);
             }
             break;
           default :
