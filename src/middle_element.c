@@ -57,7 +57,8 @@ void findMiddle()
       return;
     struct Node *slow = start;
     struct Node *fast = start;
-    while (fast != NULL && fast->next != NULL) {
+    while (fast != NULL && fast->next != NULL) 
+    {
         slow = slow->next;
         fast = fast->next->next;
     }
