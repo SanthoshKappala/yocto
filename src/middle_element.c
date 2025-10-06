@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-
 struct Node {
     int data;
     struct Node *next;
@@ -13,7 +12,8 @@ void insert(int element)
     newNode->next = NULL;
     if (start == NULL) {
         start = newNode;
-    } else {
+    }
+    else {
         struct Node *temp = start;
         while (temp->next != NULL) {
             temp = temp->next;
@@ -24,10 +24,8 @@ void insert(int element)
 void delete(int element) 
 {
     if (start == NULL) return;
-
     struct Node *temp = start;
     struct Node *prev = NULL;
-
     if (temp->data == element)
     {
       start = temp->next;
@@ -53,21 +51,26 @@ void display()
 }
 void findMiddle()
 {
-    if (start == NULL)
-      return;
+ if (start == NULL) {
+        printf("List is empty\n");
+        return;
+    }
     struct Node *slow = start;
     struct Node *fast = start;
-    while (fast != NULL && fast->next != NULL) 
-    {
+    struct Node *prev = NULL;
+
+    while (fast != NULL && fast->next != NULL)
+        {
+        prev = slow;
         slow = slow->next;
         fast = fast->next->next;
-    }
-    printf("Middle Element: %d\n", slow->data);
+        }
+printf("Middle Element: %d\n", slow->data);
 }
 int main() {
     int choice, value;
     while (1) {
-        printf("\n1.Insert\n2.Delete\n3.Display\n4.Exit\n");
+        printf("\n1.Insert\n2.Delete\n3.Display\n4.middleOfList\n");
         scanf("%d", &choice);
         switch (choice) {
             case 1:
