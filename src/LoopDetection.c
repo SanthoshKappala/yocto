@@ -42,7 +42,6 @@ void deleteNode(int element)
     prev->next = temp->next;
     free(temp);
 }
-
 void display()
 {
     struct Node *temp = start;
@@ -58,42 +57,7 @@ int hashAddress(struct Node *addr) {
 int hashValue(int value) {
     return value % HASH_SIZE;
 }
-int detectLoopByAddress()
-{
-    struct Node *hashTable[HASH_SIZE] = {NULL};
-    struct Node *temp = start;
-
-    while (temp != NULL) {
-        int index = hashAddress(temp);
-        if (hashTable[index] == temp) {
-            printf("Loop detected by ADDRESS at node with data = %d\n", temp->data);
-            return 1;
-        }
-        hashTable[index] = temp;
-        temp = temp->next;
-    }
-    printf("No loop found (by address)\n");
-    return 0;
-}
-int detectLoopByValue()
-{
-    int hashTable[HASH_SIZE] = {0};
-    struct Node *temp = start;
-
-    while (temp != NULL) {
-        int index = hashValue(temp->data);
-        if (hashTable[index] == 1) {
-            printf("Loop detected by VALUE at data = %d\n", temp->data);
-            return 1;
-        }
-        hashTable[index] = 1;
-        temp = temp->next;
-    }
-
-    printf("No loop found (by value)\n");
-    return 0;
-}
-void removeLoopByHash()
+int detectAndRemoveLoopByAddress()
 {
     struct Node *hashTable[HASH_SIZE] = {NULL};
     struct Node *temp = start;
@@ -102,17 +66,46 @@ void removeLoopByHash()
     while (temp != NULL) {
         int index = hashAddress(temp);
         if (hashTable[index] == temp) {
-            printf("Loop found and removed at node with data = %d\n", temp->data);
+            printf("Loop detected by ADDRESS at node with data = %d\n", temp->data);
             if (prev != NULL)
                 prev->next = NULL;
-            return;
+            printf("Loop removed and node %d deleted from index %d\n", temp->data, index);
+            free(temp);
+            return 1;
         }
         hashTable[index] = temp;
         prev = temp;
         temp = temp->next;
     }
 
-    printf("No loop to remove.\n");
+    printf("No loop found (by address)\n");
+    return 0;
+}
+int detectAndRemoveByValue()
+{
+    int hashTable[HASH_SIZE] = {0};
+    struct Node *temp = start;
+    struct Node *prev = NULL;
+
+    while (temp != NULL) {
+        int index = hashValue(temp->data);
+        if (hashTable[index] == 1) {
+            printf("Duplicate detected by VALUE at data = %d\n", temp->data);
+            if (prev != NULL)
+                prev->next = temp->next;
+            else
+                start = temp->next;
+            printf("Duplicate value %d removed from index %d\n", temp->data, index);
+            free(temp);
+            return 1;
+        }
+        hashTable[index] = 1;
+        prev = temp;
+        temp = temp->next;
+    }
+
+    printf("No duplicate value found.\n");
+    return 0;
 }
 
 void createLoop(int pos)
@@ -138,9 +131,8 @@ void createLoop(int pos)
 int main()
 {
     int choice, value, pos;
-
     while (1) {
-        printf("\n1.Insert\n2.Delete\n3.Display\n4.Create Loop\n5.Detect Loop (Address)\n6.Detect Loop (Value)\n7.Remove Loop\n8.Exit\n");
+        printf("\n1.Insert\n2.Delete\n3.Display\n4.Create Loop\n5.Detect+Remove Loop (Address)\n6.Detect+Remove Duplicate (Value)\n7.Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
@@ -164,15 +156,12 @@ int main()
                 createLoop(pos);
                 break;
             case 5:
-                detectLoopByAddress();
+                detectAndRemoveLoopByAddress();
                 break;
             case 6:
-                detectLoopByValue();
+                detectAndRemoveByValue();
                 break;
             case 7:
-                removeLoopByHash();
-                break;
-            case 8:
                 printf("Exiting...\n");
                 exit(0);
             default:
