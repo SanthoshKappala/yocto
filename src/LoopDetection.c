@@ -1,29 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
-
 #define HASH_SIZE 1000
-
 struct Node {
     int data;
     struct Node *next;
 };
-
 struct Node *start = NULL;
-
 int hashValue(int value) {
     return value % HASH_SIZE;
 }
-
 int hashAddress(struct Node *addr) {
     return ((unsigned long)addr) % HASH_SIZE;
 }
-
-void removeDuplicatesByValue()
-{
+void removeDuplicatesByValue() {
     int hashTable[HASH_SIZE] = {0};
     struct Node *temp = start;
     struct Node *prev = NULL;
-
     while (temp != NULL) {
         int index = hashValue(temp->data);
         if (hashTable[index] == 1) {
@@ -42,9 +34,7 @@ void removeDuplicatesByValue()
         temp = temp->next;
     }
 }
-
-void insert(int element)
-{
+void insert(int element) {
     struct Node *newNode = (struct Node *)malloc(sizeof(struct Node));
     newNode->data = element;
     newNode->next = NULL;
@@ -57,49 +47,53 @@ void insert(int element)
             temp = temp->next;
         temp->next = newNode;
     }
-
-    removeDuplicatesByValue(); // auto duplicate removal
+    removeDuplicatesByValue();
 }
-
-void deleteNode(int element)
-{
+void deleteNode(int element) {
     if (start == NULL) return;
     struct Node *temp = start;
     struct Node *prev = NULL;
-
     if (temp->data == element) {
         start = temp->next;
         free(temp);
         return;
     }
-
     while (temp != NULL && temp->data != element) {
         prev = temp;
         temp = temp->next;
     }
     if (temp == NULL) return;
-
     prev->next = temp->next;
     free(temp);
 }
+void display() {
+    struct Node *slow = start, *fast = start;
+    int loopDetected = 0;
 
-void display()
-{
-    struct Node *temp = start;
-    if (temp == NULL) {
-        printf("List is empty\n");
-        return;
+    while (fast && fast->next) {
+        slow = slow->next;
+        fast = fast->next->next;
+        if (slow == fast) {
+            loopDetected = 1;
+            break;
+        }
     }
-
+    struct Node *temp = start;
+    int count = 0;
     while (temp != NULL) {
         printf("%d -> ", temp->data);
         temp = temp->next;
-    }
-    printf("NULL\n");
-}
+        count++;
 
-void createLoop(int pos)
-{
+        if (loopDetected && count > 50) { // print only first 50 before warning
+            printf("...LOOP DETECTED...\n");
+            return;
+        }
+    }
+    if (!loopDetected)
+        printf("NULL\n");
+}
+void createLoop(int pos) {
     if (start == NULL) return;
 
     struct Node *loopNode = NULL;
@@ -112,15 +106,14 @@ void createLoop(int pos)
         temp = temp->next;
         count++;
     }
-
     if (loopNode != NULL) {
         temp->next = loopNode;
         printf("Loop created at position %d (node with data = %d)\n", pos, loopNode->data);
+    } else {
+        printf("Invalid position.\n");
     }
 }
-
-int detectAndRemoveLoopByAddress()
-{
+int detectAndRemoveLoopByAddress() {
     struct Node *hashTable[HASH_SIZE] = {NULL};
     struct Node *temp = start;
     struct Node *prev = NULL;
@@ -131,7 +124,6 @@ int detectAndRemoveLoopByAddress()
             printf("Loop detected by ADDRESS at node with data = %d\n", temp->data);
             if (prev != NULL)
                 prev->next = NULL;
-            free(temp);
             printf("Loop removed successfully.\n");
             return 1;
         }
@@ -139,20 +131,15 @@ int detectAndRemoveLoopByAddress()
         prev = temp;
         temp = temp->next;
     }
-
     printf("No loop found (by address)\n");
     return 0;
 }
-
-int main()
-{
+int main() {
     int choice, value, pos;
-
     while (1) {
         printf("\n1.Insert\n2.Delete\n3.Display\n4.Create Loop\n5.Detect+Remove Loop (Address)\n6.Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
-
         switch (choice) {
             case 1:
                 printf("Enter value to insert: ");
@@ -174,7 +161,7 @@ int main()
                 break;
             case 5:
                 detectAndRemoveLoopByAddress();
-                removeDuplicatesByValue(); // also check for duplicates
+                removeDuplicatesByValue();
                 break;
             case 6:
                 printf("Exiting...\n");
